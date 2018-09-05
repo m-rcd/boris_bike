@@ -2,29 +2,33 @@ require "docking_station"
 
 describe DockingStation do
   it { is_expected.to respond_to(:release_bike) }
+
   it 'releases a bike' do
-    bike = Bike.new
-    station = DockingStation.new
-    station.dock(bike)
-    expect(station.release_bike).to be_instance_of(Bike)
+    subject.dock(Bike.new)
+    expect(subject.release_bike).to be_instance_of(Bike)
   end
+
   it { is_expected.to respond_to(:dock).with(1).argument}
-  it 'stores bikes' do
+
+  it 'has a docked bike' do
     bike = Bike.new
-    station = DockingStation.new
-    station.dock(bike)
-    expect(station.store[0]).to eq(bike)
+    subject.dock(bike)
+    expect(subject.bike_store).to include(bike)
   end
-  it 'throws error when there are no more bike' do
-    expect {subject.release_bike}.to raise_error("No more bikes. Sorry come back another time. Bye!")
+
+  it 'raises an error if no bikes available' do
+    expect {subject.release_bike}.to raise_error('Sorry, no bikes')
   end
-  it 'thows an error when there are too many bikes in storage' do
-    station = DockingStation.new
-    (1..11).each do
-      bike = Bike.new
-      station.dock(bike)
-    end
-    bike = Bike.new
-    expect {station.dock(bike)}.to raise_error("Too many bikes, mate!")
+
+  it 'raises an error if a bike is already docked' do
+    DockingStation::DEFAULT_CAPACITY.times {subject.dock(Bike.new)}
+    expect {subject.dock(Bike.new)}.to raise_error('Sorry, we are full!')
   end
+
+  it 'allows capacity to be set' do
+    capacity = 5
+    station = DockingStation.new(capacity)
+    expect(station.capacity).to eq(capacity)
+  end
+
 end
