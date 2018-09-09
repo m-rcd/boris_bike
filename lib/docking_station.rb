@@ -3,6 +3,7 @@ require_relative 'bike'
 class DockingStation
   DEFAULT_CAPACITY = 20
 
+
   attr_reader :bikes, :capacity
 
   def initialize(capacity = DEFAULT_CAPACITY)
@@ -12,6 +13,7 @@ class DockingStation
 
   def release_bike(bike)
     fail 'Sorry, no bikes' if empty?
+    fail 'Bike is broken!' if bike.broken?
     @bikes.delete(bike)
   end
 
@@ -23,6 +25,7 @@ class DockingStation
   def bike_docked?(bike)
     @bikes.include?(bike)
   end
+
 
   private
 
