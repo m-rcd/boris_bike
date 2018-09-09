@@ -1,8 +1,8 @@
 require 'bike'
 
 describe Bike do
-
-  context 'creates an instance that has a broken argument' do
-    it { is_expected.to have_attributes(broken: false) }
+  it 'can be reported broken' do
+    subject.report_broken
+    expect(subject).to be_broken
   end
 end

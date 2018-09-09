@@ -1,14 +1,9 @@
 class Bike
-
-  BROKEN = false
-
-  attr_reader :broken
-
-  def initialize(broken = BROKEN)
-    @broken = broken
+  def report_broken
+    @broken = true
   end
 
   def broken?
-    (0..10).to_a.sample >= 8
+    @broken
   end
 end

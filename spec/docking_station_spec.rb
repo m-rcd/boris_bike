@@ -1,5 +1,4 @@
 require "docking_station"
-require 'Bike'
 
 describe DockingStation do
 
@@ -8,10 +7,10 @@ describe DockingStation do
   end
 
   context 'Releasing a bike' do
+    let(:bike) { double :bike }
     it 'releases a bike' do
-      bike1 = Bike.new
-      bike2 = Bike.new
-      allow(subject).to receive(:broken?) { false }
+      bike1 = double(:bike, broken?: false)
+      bike2 = double(:bike, broken?: false)
       subject.dock(bike1)
       subject.dock(bike2)
       subject.release_bike(bike1)
@@ -19,40 +18,37 @@ describe DockingStation do
     end
 
     it 'raises an error if no bikes available' do
-      expect {subject.release_bike(Bike.new)}.to raise_error('Sorry, no bikes')
+      bike = double(:bike, report_broken: false)
+      expect {subject.release_bike(bike)}.to raise_error('Sorry, no bikes')
     end
 
     it 'raises an error if bike broken' do
-      bike = Bike.new
-      allow(bike).to receive(:broken?) { false }
+      bike = double(:bike, broken?: true)
       subject.dock(bike)
-      allow(bike).to receive(:broken?) { true }
       expect { subject.release_bike(bike) }.to raise_error('Bike is broken!')
     end
   end
 
  context 'Docking a bike' do
-   it 'docks a bike' do
-     bike = Bike.new
-     allow(bike).to receive(:broken?) { false }
+
+  it 'docks a bike' do
+     bike = double(:bike)
+     subject.dock(bike)
+     expect(subject.bike_docked?(bike)).to be true
+   end
+
+   it 'returns a broken bike' do
+     bike = double(:bike, broken?: false)
+     subject.dock(bike)
+     subject.release_bike(bike)
      subject.dock(bike)
      expect(subject.bike_docked?(bike)).to be true
    end
 
    it 'raises an error if a bike is already docked' do
-     allow(subject).to receive(:broken?) { false }
-     DockingStation::DEFAULT_CAPACITY.times {subject.dock(Bike.new)}
-     expect {subject.dock(Bike.new)}.to raise_error('Sorry, we are full!')
-   end
-
-   it 'reports a bike as broken' do
-     bike = Bike.new
-     subject.dock(bike)
-     allow(bike).to receive(:broken) { false }
-     subject.release_bike(bike)
-     subject.dock(bike)
-     allow(subject).to receive(:broken) { true }
-     expect(bike.broken?).to eq false
+     bike = double(:bike)
+     DockingStation::DEFAULT_CAPACITY.times {subject.dock(bike)}
+     expect {subject.dock(bike)}.to raise_error('Sorry, we are full!')
    end
  end
 
